@@ -1,13 +1,26 @@
-export Events, on, emit, off
-
-typealias Events Dict{String, Union(Array{Function,1}, Function)}
+typealias Events Dict{String, Union(Vector{Function}, Function)}
 
 on(f::Function, e::Events, name::String) = on(e, name, f)
 on(e::Events, name::String, f::Function) = begin
   a = get!(e, name, f)
-  if is(a, f) return end
-  if isa(a, Array) return push!(a, f) end
-  e[name] = Function[a, f]
+  a === f && return
+  if isa(a, Array)
+    push!(a, f)
+  else
+    e[name] = Function[a, f]
+  end
+end
+
+on(e::Events, handlers::Dict) = begin
+  for (key,value) in handlers
+    on(e, key, value)
+  end
+end
+
+on(e::Events, name::String, handlers::Vector) = begin
+  for f in handlers
+    on(e, name, f)
+  end
 end
 
 off(e::Events, name::String, f::Function) = begin
@@ -20,7 +33,7 @@ off(e::Events, name::String, f::Function) = begin
 end
 
 emit(e::Events, name::String, args...) = begin
-  if !haskey(e, name) return end
-  if isa(e[name], Function) return e[name](args...) end
+  haskey(e, name) || return
+  isa(e[name], Function) && return e[name](args...)
   for f in e[name] f(args...) end
 end
