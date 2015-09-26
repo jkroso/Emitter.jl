@@ -1,4 +1,3 @@
-
 @require "." Events on off emit
 
 e = Events()
@@ -31,7 +30,7 @@ emit(e, "test")
 
 @assert calls == 5
 
-emit(Events(["test" => inc1]), "test")
+emit(Events(Dict("test" => inc1)), "test")
 
 @assert calls == 6
 
@@ -44,7 +43,7 @@ end
 emit(e, "test", 1, 2)
 @assert calls == 10
 
-on(e, {
+on(e, Dict(
   "one" => function()
     global calls += 1
   end,
@@ -52,7 +51,7 @@ on(e, {
     function() global calls += 2 end,
     function() global calls += 2 end
   ]
-})
+))
 
 emit(e, "one")
 @assert calls == 11

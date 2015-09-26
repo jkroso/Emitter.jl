@@ -1,7 +1,7 @@
-typealias Events Dict{String, Union(Vector{Function}, Function)}
+typealias Events Dict{AbstractString, Union{Vector{Function}, Function}}
 
-on(f::Function, e::Events, name::String) = on(e, name, f)
-on(e::Events, name::String, f::Function) = begin
+on(f::Function, e::Events, name::AbstractString) = on(e, name, f)
+on(e::Events, name::AbstractString, f::Function) = begin
   a = get!(e, name, f)
   a === f && return
   if isa(a, Array)
@@ -17,13 +17,13 @@ on(e::Events, handlers::Dict) = begin
   end
 end
 
-on(e::Events, name::String, handlers::Vector) = begin
+on(e::Events, name::AbstractString, handlers::Vector) = begin
   for f in handlers
     on(e, name, f)
   end
 end
 
-off(e::Events, name::String, f::Function) = begin
+off(e::Events, name::AbstractString, f::Function) = begin
   haskey(e, name) || return
   if isa(e[name], Function)
     is(e[name], f) && delete!(e, name)
@@ -32,7 +32,7 @@ off(e::Events, name::String, f::Function) = begin
   end
 end
 
-emit(e::Events, name::String, args...) = begin
+emit(e::Events, name::AbstractString, args...) = begin
   haskey(e, name) || return
   isa(e[name], Function) && return e[name](args...)
   for f in e[name] f(args...) end
