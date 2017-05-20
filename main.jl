@@ -1,4 +1,4 @@
-typealias Events Dict{AbstractString, Union{Vector{Function}, Function}}
+const Events = Dict{AbstractString, Union{Vector{Function}, Function}}
 
 on(f::Function, e::Events, name::AbstractString) = on(e, name, f)
 on(e::Events, name::AbstractString, f::Function) = begin
